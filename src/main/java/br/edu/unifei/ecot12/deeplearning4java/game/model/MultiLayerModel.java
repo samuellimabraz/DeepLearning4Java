@@ -33,8 +33,6 @@ public class MultiLayerModel extends PredictionModel {
 
     @Override
     public List<PredictionResult> predict(INDArray drawing) {
-        System.out.println("imgArray shape: " + Arrays.toString(drawing.shape()));
-        System.out.println("imgArray min - max: " + drawing.minNumber() + " - " + drawing.maxNumber());
         INDArray percentages = model.predict(drawing).mul(100);
         System.out.println("Predictions: " + percentages);
         List<PredictionResult> results = new ArrayList<>();
