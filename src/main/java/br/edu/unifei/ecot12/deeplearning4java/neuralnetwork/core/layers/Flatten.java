@@ -14,7 +14,7 @@ public class Flatten extends Layer<Flatten> {
 
     @Override
     public INDArray forward(INDArray inputs) {
-        this.setInput(inputs.dup());
+        this.setInput(inputs);
         INDArray output = inputs.reshape(new int[] {(int) inputs.size(0), -1 });
         this.setOutput(output);
         return output;
@@ -22,8 +22,7 @@ public class Flatten extends Layer<Flatten> {
 
     @Override
     public INDArray backward(INDArray gradout) {
-        INDArray gradInput = gradout.reshape(this.getInput().shape());
-        return gradInput;
+        return gradout.reshape(this.getInput().shape());
     }
 
     @Override
