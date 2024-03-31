@@ -33,6 +33,9 @@ public class NonLinearFunctions {
         System.out.println("x type: " + x.dataType());
         System.out.println("y type: " + y.dataType());
 
+        System.out.println("x shape: " + Arrays.toString(x.shape()));
+        System.out.println("y shape: " + Arrays.toString(y.shape()));
+
         // Normalização dos dados
         DataProcessor scaler = new StandardScaler();
         INDArray x_scaled = scaler.fitTransform(x);
@@ -58,16 +61,10 @@ public class NonLinearFunctions {
 
         INDArray x_test = trainer.getTestInputs();
         INDArray y_test = trainer.getTestTargets();
-        System.out.println("x [0]: " + x_test.getRow(0));
-        System.out.println("y [0]: " + y_test.getRow(0));
 
         trainer.fit();
 
         // Predição
-        x_test = trainer.getTestInputs();
-        y_test = trainer.getTestTargets();
-        System.out.println("x [0]: " + x_test.getRow(0));
-        System.out.println("y [0]: " + y_test.getRow(0));
 
         INDArray predict = model.predict(x_test);
         x_test = scaler.inverseTransform(x_test);
@@ -202,8 +199,10 @@ public class NonLinearFunctions {
         INDArray x = Nd4j.rand(DataType.DOUBLE, numSamples, 2).mul(10).sub(5);
         INDArray y = saddle(x).reshape(numSamples, 1);
 
-        System.out.println("x: " + Arrays.toString(x.data().asFloat()));
-        System.out.println("y: " + Arrays.toString(y.data().asFloat()));
+//        System.out.println("x: " + Arrays.toString(x.data().asFloat()));
+//        System.out.println("y: " + Arrays.toString(y.data().asFloat()));
+        System.out.println("x shape: " + Arrays.toString(x.shape()));
+        System.out.println("y shape: " + Arrays.toString(y.shape()));
         System.out.println("X range: " + x.minNumber() + " - " + x.maxNumber());
 
         // Normalização dos dados
@@ -215,8 +214,8 @@ public class NonLinearFunctions {
 
         // Criação do modelo
         NeuralNetwork model = new ModelBuilder()
-                .add(new Dense(32, Activation.create("relu"), "glorot"))
-                .add(new Dense(16, Activation.create("tanh")))
+                .add(new Dense(32, Activation.create("relu"), "xavier"))
+                .add(new Dense(16, Activation.create("tanh"), "xavier"))
                 .add(new Dense(1, Activation.create("linear")))
                 .build();
 

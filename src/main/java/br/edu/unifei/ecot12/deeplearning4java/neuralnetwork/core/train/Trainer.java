@@ -74,21 +74,14 @@ public class Trainer {
             while (hasNextBatch()) {
                 this.getNextBatch();
 
-//                System.out.println("1x_train [0]: " + trainInputs.getRow(0));
-//                System.out.println("1y_train [0]: " + trainTargets.getRow(0));
-
                 // Forward pass
                 predictions = model.predict(batch[0]);
 
-//                System.out.println("2x_train [0]: " + trainInputs.getRow(0));
-//                System.out.println("2y_train [0]: " + trainTargets.getRow(0));
+                //System.out.println("Batch shape: " + batch[0].shapeInfoToString());
 
                 // Backward pass
                 gradLoss = lossFunction.backward(predictions, batch[1]);
 
-//                System.out.println("3x_train [0]: " + trainInputs.getRow(0));
-//                System.out.println("3y_train [0]: " + trainTargets.getRow(0));
-                //System.out.println("gradLoss: " + gradLoss);
                 model.backPropagation(gradLoss);
 
                 optimizer.update();

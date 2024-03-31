@@ -137,7 +137,7 @@ public class Dense extends TrainableLayer {
             throw new IllegalArgumentException("Input dimensions are not compatible with weight matrix dimensions");
         }
 
-         input = inputs;
+        input = inputs;
 
         // output = activation(input * W + b)
         output = activation.forward(

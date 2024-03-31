@@ -41,11 +41,6 @@ public abstract class Layer <T extends Layer<T>> {
     }
     public abstract void saveAdditional(DataOutputStream dos) throws IOException;
 
-//    public INDArray getParams() { throw new UnsupportedOperationException(); }
-//    public void setParams(INDArray params) { throw new UnsupportedOperationException(); }
-//    public INDArray getGrads() { throw new UnsupportedOperationException(); }
-//    public void setGrads(INDArray grads) { throw new UnsupportedOperationException(); }
-
     public INDArray getInput() {
         return input;
     }
