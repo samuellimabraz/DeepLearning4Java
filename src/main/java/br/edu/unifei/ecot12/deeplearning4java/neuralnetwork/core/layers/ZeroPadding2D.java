@@ -9,7 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ZeroPadding2D extends Layer<ZeroPadding2D> {
-    private int padding;
+    private final int padding;
 
     public ZeroPadding2D(int padding) {
         this.padding = padding;
@@ -25,13 +25,12 @@ public class ZeroPadding2D extends Layer<ZeroPadding2D> {
 
     @Override
     public INDArray backward(INDArray gradout) {
-        INDArray gradInput = gradout.get(
+        return gradout.get(
                 NDArrayIndex.all(),
                 NDArrayIndex.interval(padding, gradout.shape()[1] - padding),
                 NDArrayIndex.interval(padding, gradout.shape()[2] - padding),
                 NDArrayIndex.all()
         );
-        return gradInput;
     }
 
     @Override
