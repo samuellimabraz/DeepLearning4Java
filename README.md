@@ -1,2 +1,2 @@
 # DeepLearning4Java
-Este projeto é uma implementação de uma pequena bilioteca de DeepLearning do zero em Java, inspirada no Keras e no livro "Deep Learning From Scratch" da O'Reilly. O objetivo é aplicar os principais padrões de design e diagramação UML em um projeto de software.
+Projeto e implementação de uma pequena biblioteca de DeepLearning do zero em Java, inspirada no Keras e no livro "Deep Learning From Scratch" da O'Reilly. O objetivo é aplicar os principais Design Patterns de OOP e diagramação UML em um projeto de software.
