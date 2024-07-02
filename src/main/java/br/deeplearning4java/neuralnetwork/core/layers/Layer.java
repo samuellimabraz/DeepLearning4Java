@@ -5,23 +5,27 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import dev.morphia.annotations.*;
+import dev.morphia.Datastore;
+import org.bson.types.ObjectId;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-import javax.persistence.*;
-
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Layer <T extends Layer<T>> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    public ObjectId id = new ObjectId();
 
-    public String name = "layer_" + this.getClass().getSimpleName() + UUID.randomUUID();
+    @Reference(ignoreMissing = true, lazy = true)
+    public Layer<?> nextLayer = null;
+
+    @Property
+    public String name = "layer_" + this.getClass().getSimpleName() + "_" + UUID.randomUUID();
 
     @Transient
     protected INDArray input;
     @Transient
     protected INDArray output;
+    @Property
     public boolean inference = false;
 
     public abstract INDArray forward(INDArray inputs);
@@ -42,6 +46,11 @@ public abstract class Layer <T extends Layer<T>> {
         this.saveAdditional(dos);
     }
     public abstract void saveAdditional(DataOutputStream dos) throws IOException;
+
+    public void save(Datastore datastore) {
+        System.out.println("Saving " + this.getClass().getSimpleName());
+        datastore.save(this);
+    }
 
     public INDArray getInput() {
         return input;
@@ -71,5 +80,9 @@ public abstract class Layer <T extends Layer<T>> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ObjectId getId() {
+        return id;
     }
 }

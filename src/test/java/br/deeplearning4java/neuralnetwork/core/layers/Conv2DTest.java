@@ -10,6 +10,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +22,7 @@ public class Conv2DTest {
         // Create an instance of Conv2D
         int filters = 4;
         int kernelSize = 2;
-        INDArray strides = Nd4j.create(new double[]{1, 1});
+        List<Integer> strides = Arrays.asList(1, 1);
         String padding = "same";
         Conv2D conv2D = new Conv2D(filters, kernelSize, strides, padding, Activation.create("relu"), "zero");
 
@@ -30,7 +32,7 @@ public class Conv2DTest {
         System.out.println("Inputs:" + inputs);
 
         // Call the forward method
-        INDArray output = conv2D.forward2(inputs);
+        INDArray output = conv2D.forward(inputs);
 
         System.out.println("Params shape:" + conv2D.getParams().shapeInfoToString());
         System.out.println("Params:" + conv2D.getParams());
@@ -59,7 +61,7 @@ public class Conv2DTest {
         // Create an instance of Conv2D
         int filters = 4;
         int kernelSize = 2;
-        INDArray strides = Nd4j.create(new double[]{1, 1});
+        List<Integer> strides = Arrays.asList(1, 1);
         String padding = "same";
         Conv2D conv2D = new Conv2D(filters, kernelSize, strides, padding, Activation.create("relu"), "xavier");
 
@@ -92,7 +94,7 @@ public class Conv2DTest {
 
     @Test
     public void testSaveAndLoad() throws Exception {
-        Conv2D originalLayer = new Conv2D(4, 2, Nd4j.ones(2).mul(1), "same", Activation.create("relu"), "xavier");
+        Conv2D originalLayer = new Conv2D(4, 2, Arrays.asList(2, 2), "same", Activation.create("relu"), "xavier");
         // Create some input data
         INDArray inputs = Nd4j.rand(1, 5, 5, 3); // 1 image, 5x5 size, 3 channels
 

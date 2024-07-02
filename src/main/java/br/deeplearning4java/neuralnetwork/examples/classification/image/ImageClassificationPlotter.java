@@ -1,10 +1,11 @@
-package br.deeplearning4java.neuralnetwork.examples.imageclassification;
+package br.deeplearning4java.neuralnetwork.examples.classification.image;
 
 import br.deeplearning4java.neuralnetwork.core.activation.Activation;
 import br.deeplearning4java.neuralnetwork.core.activation.IActivation;
 import br.deeplearning4java.neuralnetwork.core.models.NeuralNetwork;
 import br.deeplearning4java.neuralnetwork.data.DataLoader;
 import br.deeplearning4java.neuralnetwork.data.Util;
+import br.deeplearning4java.neuralnetwork.database.NeuralNetworkService;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -26,6 +27,8 @@ public class ImageClassificationPlotter extends Application {
     private DataLoader dataLoader;
     private NeuralNetwork model;
     private IActivation softmax = Activation.create("softmax");
+    private final static String MONGODB_URI = "mongodb+srv://samuellimabraz:hibana22@cluster0.bo7cqjk.mongodb.net/?appName=Cluster0";
+
 
     @Override
     public void init() throws Exception {
@@ -40,7 +43,9 @@ public class ImageClassificationPlotter extends Application {
             String dataRoot = "src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/quickdraw";
 
             dataLoader = new DataLoader(dataRoot + "/npy/train/x_train250.npy", dataRoot + "/npy/train/y_train250.npy", dataRoot + "/npy/test/x_test250.npy", dataRoot + "/npy/test/y_test250.npy");
-            model = NeuralNetwork.loadModel(dataRoot + "/model/quickdraw_model-cnn.zip");
+            NeuralNetworkService service = new NeuralNetworkService();
+            model = service.loadModel("quickdraw-cnn");
+            model.setInference(true);
         }
     }
 

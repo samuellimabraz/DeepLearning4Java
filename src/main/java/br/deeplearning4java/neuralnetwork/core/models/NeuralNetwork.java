@@ -12,20 +12,23 @@ import java.util.stream.Collectors;
 import br.deeplearning4java.neuralnetwork.core.layers.LayerLoader;
 import br.deeplearning4java.neuralnetwork.core.layers.TrainableLayer;
 import br.deeplearning4java.neuralnetwork.core.layers.Layer;
+import dev.morphia.annotations.*;
+import org.bson.types.ObjectId;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-import javax.persistence.*;
+
 
 @Entity
-public class NeuralNetwork implements Iterable<TrainableLayer> {
+public class NeuralNetwork {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    public ObjectId id = new ObjectId();
 
+    @Property
     public String name = "neural_network_" + UUID.randomUUID().toString();
 
-    @OneToMany(orphanRemoval = true)
-    private List<Layer> layers = new ArrayList<>();
+    @Reference(lazy = true)
+    protected List<Layer> layers = new ArrayList<>();
+
     @Transient
     private List<TrainableLayer> trainableLayers = new ArrayList<>();
 
@@ -34,13 +37,26 @@ public class NeuralNetwork implements Iterable<TrainableLayer> {
 
     public NeuralNetwork(ModelBuilder modelBuilder) {
         this.setLayers(modelBuilder.layers);
+
         this.trainableLayers = layers.stream()
                 .filter(layer -> layer instanceof TrainableLayer)
                 .map(layer -> (TrainableLayer) layer)
                 .collect(Collectors.toList());
     }
 
-    public NeuralNetwork() {
+    protected NeuralNetwork() {
+    }
+
+    @PostLoad
+    public void initTrainableLayers() {
+        this.trainableLayers = layers.stream()
+                .filter(layer -> layer instanceof TrainableLayer)
+                .map(layer -> (TrainableLayer) layer)
+                .collect(Collectors.toList());
+    }
+
+    public ObjectId getId() {
+        return id;
     }
 
     public void setName(String name) {
@@ -49,11 +65,6 @@ public class NeuralNetwork implements Iterable<TrainableLayer> {
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public Iterator<TrainableLayer> iterator() {
-        return trainableLayers.iterator();
     }
 
     public INDArray predict(INDArray x) {
@@ -72,6 +83,12 @@ public class NeuralNetwork implements Iterable<TrainableLayer> {
     }
 
     public List<TrainableLayer> getTrainableLayers() {
+        if (trainableLayers.isEmpty()) {
+            trainableLayers = layers.stream()
+                    .filter(layer -> layer instanceof TrainableLayer)
+                    .map(layer -> (TrainableLayer) layer)
+                    .collect(Collectors.toList());
+        }
         return trainableLayers;
     }
 
@@ -90,6 +107,7 @@ public class NeuralNetwork implements Iterable<TrainableLayer> {
     public void saveModel(String filePath) throws IOException {
         DataOutputStream dos = new DataOutputStream(Files.newOutputStream(Paths.get(filePath)));
 
+        dos.writeUTF(name);
         // Salva o número de camadas
         dos.writeInt(layers.size());
 
@@ -110,6 +128,9 @@ public class NeuralNetwork implements Iterable<TrainableLayer> {
     public static NeuralNetwork loadModel(String filePath) throws Exception {
         DataInputStream dis = new DataInputStream(new FileInputStream(filePath));
 
+        // Carrega o nome
+        String name = dis.readUTF();
+
         // Carrega o número de camadas
         int numLayers = dis.readInt();
 
@@ -122,8 +143,18 @@ public class NeuralNetwork implements Iterable<TrainableLayer> {
 
         dis.close();
 
-        System.out.println("Model loaded successfully56");
+        System.out.println("Model loaded successfully");
 
-        return modelBuilder.build();
+        NeuralNetwork model =  modelBuilder.build();
+        model.setName(name);
+
+        return model;
+    }
+
+    public String toString() {
+        return "NeuralNetwork{" +
+                "name='" + name + '\'' +
+                ", layers=" + layers +
+                '}';
     }
 }

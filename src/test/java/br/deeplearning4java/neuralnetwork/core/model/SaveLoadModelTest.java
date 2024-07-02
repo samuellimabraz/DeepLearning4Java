@@ -16,7 +16,7 @@ public class SaveLoadModelTest {
     @Test
     public void testLoadLinearModel() throws Exception {
         // Carrega o modelo do arquivo
-        String filePath = "src/test/java/br/deeplearning4java/neuralnetwork/core/model/linear_regression.bin";
+        String filePath = "src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/regression/linear_regression.zip";
         NeuralNetwork loadedModel = null;
         try {
            loadedModel = NeuralNetwork.loadModel(filePath);
@@ -35,7 +35,7 @@ public class SaveLoadModelTest {
         Dense denseLayer = (Dense) layers.get(0);
         assertEquals(1, denseLayer.getUnits());
         assertEquals("linear", denseLayer.getActivation().getClass().getSimpleName().toLowerCase());
-        assertEquals("xavier", denseLayer.getKernelInitializer());
+        assertEquals("he", denseLayer.getKernelInitializer());
 
         System.out.println("Weights: " + denseLayer.getWeights());
         System.out.println("Bias: " + denseLayer.getBias());
@@ -48,7 +48,7 @@ public class SaveLoadModelTest {
     @Test
     public void testLoadSineModel() {
         // Carrega o modelo do arquivo
-        String filePath = "src/test/java/br/deeplearning4java/neuralnetwork/core/model/sine_function.zip";
+        String filePath = "src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/regression/sine_function.zip";
         NeuralNetwork loadedModel = null;
         try {
             loadedModel = NeuralNetwork.loadModel(filePath);
@@ -67,7 +67,7 @@ public class SaveLoadModelTest {
         Dense denseLayer = (Dense) layers.get(0);
         assertEquals(32, denseLayer.getUnits());
         assertEquals("relu", denseLayer.getActivation().getClass().getSimpleName().toLowerCase());
-        assertEquals("xavier", denseLayer.getKernelInitializer());
+        assertEquals("he", denseLayer.getKernelInitializer());
 
         INDArray params = denseLayer.getParams();
         INDArray weights = denseLayer.getWeights();

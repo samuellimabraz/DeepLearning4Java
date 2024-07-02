@@ -1,15 +1,13 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
 import br.deeplearning4java.neuralnetwork.core.activation.*;
-import br.deeplearning4java.neuralnetwork.database.ActivationConverter;
+import dev.morphia.annotations.*;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -17,13 +15,26 @@ import java.util.Arrays;
 
 @Entity
 public class Dense extends TrainableLayer {
-    @Convert(converter = ActivationConverter.class)
+    @Transient
     private IActivation activation;
+    @Property
+    private String activationType;
+    @Property
     private int units;
+    @Transient
     private boolean isInitialized = false;
+    @Property
     private String kernelInitializer;
-
+    @Property
     private double lambda;
+
+    @PostLoad
+    public void loadActivationType() {
+        if (activationType != null) {
+            activation = Activation.create(activationType);
+        }
+        this.isInitialized = false;
+    }
 
     /**
      * Constructor for Dense
@@ -38,6 +49,7 @@ public class Dense extends TrainableLayer {
         this.activation = activation;
         this.kernelInitializer = kernelInitializer;
         this.lambda = lambda;
+        this.activationType = activation.getClass().getSimpleName().toLowerCase();
     }
 
     /**
@@ -127,14 +139,15 @@ public class Dense extends TrainableLayer {
     public void setup(INDArray inputs) {
         int numInputs = inputs.columns();
 
-        double scale = getScale(numInputs);
-
         // Weights and bias represented as a single matrix, where the last row is the bias
         // The matrix have shape (numInputs + 1, units)
+        if (params == null || grads == null) {
+            double scale = getScale(numInputs);
 
-        params = Nd4j.vstack(Nd4j.randn(DataType.DOUBLE, numInputs, this.units).mul(scale), Nd4j.zeros(DataType.DOUBLE, 1, this.units).mul(scale)); // W and b
-        // Gradients of weights and bias
-        grads = Nd4j.zeros(DataType.DOUBLE, params.shape()); // dW and db
+            params = Nd4j.vstack(Nd4j.randn(DataType.DOUBLE, numInputs, this.units).mul(scale), Nd4j.zeros(DataType.DOUBLE, 1, this.units).mul(scale)); // W and b
+            // Gradients of weights and bias
+            grads = Nd4j.zeros(DataType.DOUBLE, params.shape()); // dW and db
+        }
         isInitialized = true;
     }
 
@@ -259,7 +272,7 @@ public class Dense extends TrainableLayer {
             throw new IOException("Layer is not initialized");
         }
         dos.writeInt(this.units);
-        dos.writeUTF(this.activation.getClass().getSimpleName().toLowerCase());
+        dos.writeUTF(this.activationType);
         dos.writeUTF(this.kernelInitializer);
         dos.writeBoolean(this.isInitialized);
         super.saveAdditional(dos);
@@ -286,7 +299,8 @@ public class Dense extends TrainableLayer {
      */
     public Dense loadAdditional(DataInputStream dis) throws IOException {
         this.units = dis.readInt();
-        this.activation = Activation.create(dis.readUTF());
+        this.activationType = dis.readUTF();
+        this.activation = Activation.create(this.activationType);
         this.kernelInitializer = dis.readUTF();
         this.isInitialized = dis.readBoolean();
         super.loadAdditional(dis);

@@ -1,14 +1,16 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
+import dev.morphia.annotations.Entity;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-import javax.persistence.Convert;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-@Convert
+@Entity("flatten")
 public class Flatten extends Layer<Flatten> {
+    public Flatten() {
+    }
 
     @Override
     public INDArray forward(INDArray inputs) {

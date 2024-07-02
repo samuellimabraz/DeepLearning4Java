@@ -19,6 +19,8 @@
         <junit.version>5.8.0-M1</junit.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <maven-surefire.version>${maven-surefire-plugin.version}</maven-surefire.version>
+        <mongodb-driver-sync.version>4.5.1</mongodb-driver-sync.version>
+        <morphia-core.version>2.4.14</morphia-core.version>
     </properties>
 
     <dependencies>
@@ -35,15 +37,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-core</artifactId>
-            <version>4.0.10</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>${mongodb-driver-sync.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-bolt-driver</artifactId>
-            <version>4.0.10</version>
+            <groupId>dev.morphia.morphia</groupId>
+            <artifactId>morphia-core</artifactId>
+            <version>${morphia-core.version}</version>
         </dependency>
 
         <dependency>

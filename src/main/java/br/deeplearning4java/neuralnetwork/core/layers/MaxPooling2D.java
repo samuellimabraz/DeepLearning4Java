@@ -1,6 +1,7 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
 
+import dev.morphia.annotations.Entity;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -12,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
+@Entity
 public class MaxPooling2D extends Layer<MaxPooling2D> {
     private int poolSize;
     private int stride;

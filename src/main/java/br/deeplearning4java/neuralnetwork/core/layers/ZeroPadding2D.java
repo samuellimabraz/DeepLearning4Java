@@ -1,17 +1,19 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Property;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import javax.persistence.Entity;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 @Entity
 public class ZeroPadding2D extends Layer<ZeroPadding2D> {
-    private final int padding;
+    @Property
+    protected int padding;
 
     public ZeroPadding2D(int padding) {
         this.padding = padding;

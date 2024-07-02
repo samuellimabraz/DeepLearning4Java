@@ -1,4 +1,4 @@
-package br.deeplearning4java.neuralnetwork.examples.imageclassification.qdraw;
+package br.deeplearning4java.neuralnetwork.examples.classification.image.qdraw;
 
 import br.deeplearning4java.neuralnetwork.core.activation.Activation;
 import br.deeplearning4java.neuralnetwork.core.layers.Conv2D;
@@ -11,10 +11,7 @@ import br.deeplearning4java.neuralnetwork.core.metrics.Precision;
 import br.deeplearning4java.neuralnetwork.core.metrics.Recall;
 import br.deeplearning4java.neuralnetwork.core.models.ModelBuilder;
 import br.deeplearning4java.neuralnetwork.core.models.NeuralNetwork;
-import br.deeplearning4java.neuralnetwork.core.optimizers.ExponentialDecayStrategy;
-import br.deeplearning4java.neuralnetwork.core.optimizers.LearningRateDecayStrategy;
-import br.deeplearning4java.neuralnetwork.core.optimizers.Optimizer;
-import br.deeplearning4java.neuralnetwork.core.optimizers.RMSProp;
+import br.deeplearning4java.neuralnetwork.core.optimizers.*;
 import br.deeplearning4java.neuralnetwork.core.train.Trainer;
 import br.deeplearning4java.neuralnetwork.core.train.TrainerBuilder;
 import br.deeplearning4java.neuralnetwork.core.losses.SoftmaxCrossEntropy;
@@ -64,7 +61,7 @@ public class QuickDrawNN {
     }
 
     public static void train(int trainSize, int testSize) throws Exception {
-        String root = "src/main/resources/br/edu/unifei/ecot12/deeplearning4java/neuralnetwork/examples/data/quickdraw";
+        String root = "src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/quickdraw";
         int numClasses = CLASS_NAMES.size();
 
         DataLoader dataLoader = new DataLoader(root + "/npy/train/x_train250.npy", root + "/npy/train/y_train250.npy", root + "/npy/test/x_test250.npy", root + "/npy/test/y_test250.npy");
@@ -101,8 +98,8 @@ public class QuickDrawNN {
 
         // Build the model
         NeuralNetwork model = new ModelBuilder()
-                .add(new Conv2D(32, 3, Nd4j.create(new double[]{2, 2}), "valid", Activation.create("relu"), "he"))
-                .add(new Conv2D(16, 1, Nd4j.create(new double[]{1, 1}), "valid", Activation.create("relu"), "he"))
+                .add(new Conv2D(32, 2, Arrays.asList(2, 2), "valid", Activation.create("relu"), "he"))
+                .add(new Conv2D(16, 1, Arrays.asList(1, 1), "valid", Activation.create("relu"), "he"))
                 .add(new Flatten())
                 .add(new Dense(178, Activation.create("relu"), "he"))
                 .add(new Dropout(0.4))
@@ -111,7 +108,7 @@ public class QuickDrawNN {
                 .add(new Dense(numClasses,  Activation.create("linear"), "he"))
                 .build();
 
-        //NeuralNetwork model = NeuralNetwork.loadModel("src/main/resources/br/edu/unifei/ecot12/deeplearning4java/neuralnetwork/examples/data/quickdraw/model/quickdraw_model-dense.bin");
+        //NeuralNetwork model = NeuralNetwork.loadModel("src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/quickdraw/model/quickdraw-cnn.zip");
 
         int epochs = 20;
         int batchSize = 64;
@@ -130,7 +127,7 @@ public class QuickDrawNN {
         trainer.fit();
 
        try {
-           model.saveModel("src/main/resources/br/edu/unifei/ecot12/deeplearning4java/neuralnetwork/examples/data/quickdraw/model/quickdraw_model-cnn.zip");
+           model.saveModel("src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/quickdraw/model/quickdraw-cnn.zip");
            System.out.println("Model saved");
        } catch (Exception e) {
            e.printStackTrace();

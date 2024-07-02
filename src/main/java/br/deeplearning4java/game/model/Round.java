@@ -18,7 +18,7 @@ public class Round {
     @Transient
     private Timer timer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Draw drawing;
 
     @Transient

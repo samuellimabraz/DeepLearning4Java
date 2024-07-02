@@ -2,9 +2,11 @@ package br.deeplearning4java.neuralnetwork.core.optimizers;
 
 import br.deeplearning4java.neuralnetwork.core.layers.TrainableLayer;
 import br.deeplearning4java.neuralnetwork.core.models.NeuralNetwork;
+import dev.morphia.annotations.Entity;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ public abstract class Optimizer {
     protected LearningRateDecayStrategy learningRateDecayStrategy;
     protected double learningRate;
     protected Map<TrainableLayer, List<INDArray>> auxParams = new HashMap<>();
+    protected List<TrainableLayer> trainableLayers;
 
     private boolean initialized = false;
 
@@ -34,10 +37,11 @@ public abstract class Optimizer {
 
     public void setNeuralNetwork(NeuralNetwork neuralNetwork) {
         this.neuralNetwork = neuralNetwork;
+        this.trainableLayers = neuralNetwork.getTrainableLayers();
     }
 
     protected void init() {
-        for (TrainableLayer layer : neuralNetwork) {
+        for (TrainableLayer layer : trainableLayers) {
             auxParams.put(layer, createAuxParams(layer.getParams()));
         }
     }
@@ -47,7 +51,7 @@ public abstract class Optimizer {
             init();
             initialized = true;
         }
-        for (TrainableLayer layer : neuralNetwork) {
+        for (TrainableLayer layer : trainableLayers) {
             updateRule(layer.getParams(), layer.getGrads(), auxParams.get(layer));
         }
     }

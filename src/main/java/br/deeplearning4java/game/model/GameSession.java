@@ -1,10 +1,12 @@
 package br.deeplearning4java.game.model;
 
+import br.deeplearning4java.game.model.database.GeolocationUtil;
 import br.deeplearning4java.game.model.database.PersistenceManager;
 import br.deeplearning4java.game.viewmodel.GameViewModel;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,9 +20,14 @@ public class GameSession implements RoundListener {
     @Transient
     private GameViewModel viewModel;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "game_session_id")
-    private final List<Round> rounds = new ArrayList<>(4);
+    @Transient
+    private List<String> roundCategories;
+    @Transient
+    private final int maxRounds = 4;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_session_id", nullable = false)
+    private List<Round> rounds;
 
     private int currentRound;
 
@@ -28,29 +35,38 @@ public class GameSession implements RoundListener {
     private PredictionModel model;
 
     private LocalDate date;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String country;
 
     public GameSession(PredictionModel model) {
         this.model = model;
         currentRound = 0;
-        // Init 6 Rounds with random categories
+        roundCategories = new ArrayList<>(maxRounds);
+        rounds = new ArrayList<>(maxRounds);
+
         List<String> categories = new ArrayList<>(model.getCategories());
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < maxRounds; i++) {
             // Add random category of model categories
             String category = categories.get((int) (Math.random() * categories.size()));
             categories.remove(category);
-            rounds.add(new Round(category, 20));
-            rounds.get(i).setListener(this);
+            roundCategories.add(category);
         }
 
         this.date = LocalDate.now();
-        this.country = Locale.getDefault().getCountry();
+        this.startTime = LocalTime.now();
+        this.country = GeolocationUtil.getCountryFromIP();
 
         // Print the country and date information
-        System.out.println("Game started in country: " + country + " at " + date);
+        System.out.println("Game started in country: " + country + " at " + date + " " + startTime);
     }
 
     public GameSession() {
+    }
+
+    public void initRounds() {
+        rounds.add(new Round(roundCategories.get(0), 20));
+        rounds.get(0).setListener(this);
     }
 
     public void start() {
@@ -61,12 +77,16 @@ public class GameSession implements RoundListener {
     public boolean nextRound() {
         cancelTimer();
         currentRound++;
-        return currentRound != rounds.size();
+        if (currentRound >= roundCategories.size()) {
+            return false;
+        }
+        rounds.add(new Round(roundCategories.get(currentRound), 20));
+        rounds.get(currentRound).setListener(this);
+        return true;
     }
-
     public void endGame() {
         cancelTimer();
-        currentRound = 0;
+        this.endTime = LocalTime.now();
     }
 
     public void cancelTimer() {
@@ -115,6 +135,22 @@ public class GameSession implements RoundListener {
 
     public String getCountry() {
         return country;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override

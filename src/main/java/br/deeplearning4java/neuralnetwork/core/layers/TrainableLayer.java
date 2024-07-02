@@ -1,9 +1,10 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
+import dev.morphia.Datastore;
+import dev.morphia.annotations.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import javax.persistence.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -17,24 +18,21 @@ public abstract class TrainableLayer extends Layer<TrainableLayer> {
     protected INDArray params;
     @Transient
     protected INDArray grads;
+    @Property
     public boolean trainable = true;
 
-    @Lob
-    @Column(name = "params")
+    @Property("params")
     private byte[] paramsData;
-
-    @Lob
-    @Column(name = "grads")
+    @Property("grads")
     private byte[] gradsData;
 
     @PrePersist
-    @PreUpdate
-    public void updateDataArrays() {
+    public void updateDataArrays() throws IOException {
         if (params != null) {
-            paramsData = params.data().asBytes();
+            paramsData = Nd4j.toByteArray(params);
         }
         if (grads != null) {
-            gradsData = grads.data().asBytes();
+            gradsData = Nd4j.toByteArray(grads);
         }
     }
 

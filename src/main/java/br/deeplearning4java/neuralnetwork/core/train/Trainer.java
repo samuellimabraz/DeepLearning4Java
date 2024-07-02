@@ -6,15 +6,21 @@ import br.deeplearning4java.neuralnetwork.data.Util;
 import br.deeplearning4java.neuralnetwork.core.models.NeuralNetwork;
 import br.deeplearning4java.neuralnetwork.core.optimizers.Optimizer;
 
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Reference;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import java.util.Random;
 
+
 public class Trainer {
+
     private final NeuralNetwork model;
+
     private final Optimizer optimizer;
+
     private final ILossFunction lossFunction;
     private IMetric metric=null;
     

@@ -150,6 +150,12 @@ public class Util {
         return image;
     }
 
+    public static WritableImage byteArrayToImage(byte[] byteArray) throws IOException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
+        BufferedImage bufferedImage = ImageIO.read(byteArrayInputStream);
+        return SwingFXUtils.toFXImage(bufferedImage, null);
+    }
+
     public static INDArray imageToINDArray(WritableImage writableImage, int width, int height) {
         // Convert the JavaFX image to a BufferedImage
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);

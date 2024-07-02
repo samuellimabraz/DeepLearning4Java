@@ -92,7 +92,7 @@ public class GameController implements Initializable {
     }
 
     public void handleNextButtonAction(ActionEvent actionEvent) throws IOException {
-        viewModel.nextRound();
+        viewModel.nextRound(false);
     }
 
     public void nextRound() throws IOException {

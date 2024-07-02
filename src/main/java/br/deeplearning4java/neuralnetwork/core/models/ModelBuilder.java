@@ -10,6 +10,11 @@ public class ModelBuilder {
 
     public ModelBuilder add(Layer layer) {
         this.layers.add(layer);
+        if (this.layers.size() > 1) {
+            int i = this.layers.size() - 2;
+            this.layers.get(i).nextLayer = layer;
+            System.out.println("Connect: " + layers.get(i).getName() + " -> " + layers.get(i + 1).getName());
+        }
         return this;
     }
     public NeuralNetwork build() {

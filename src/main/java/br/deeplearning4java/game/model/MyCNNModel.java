@@ -4,6 +4,13 @@ import br.deeplearning4java.neuralnetwork.core.activation.Activation;
 import br.deeplearning4java.neuralnetwork.core.activation.IActivation;
 import br.deeplearning4java.neuralnetwork.core.models.NeuralNetwork;
 import br.deeplearning4java.neuralnetwork.data.Util;
+import br.deeplearning4java.neuralnetwork.database.NeuralNetworkService;
+import com.mongodb.client.MongoClients;
+import dev.morphia.Datastore;
+import dev.morphia.Morphia;
+import dev.morphia.query.Query;
+import dev.morphia.query.filters.Filter;
+import dev.morphia.query.filters.Filters;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import javax.persistence.Entity;
@@ -16,12 +23,12 @@ import java.util.List;
 @Entity
 public class MyCNNModel extends PredictionModel {
     @Transient
-    private static NeuralNetwork model;
+    private static NeuralNetwork model = null;
     @Transient
     private final IActivation softmax= Activation.create("softmax");
 
-    static {
-        PredictionModel.categories = Arrays.asList(
+    public MyCNNModel() {
+        categories = Arrays.asList(
                 "ladder",
                 "bucket",
                 "t-shirt",
@@ -34,17 +41,22 @@ public class MyCNNModel extends PredictionModel {
                 "candle"
         );
 
+        databaseType = "MongoDB";
+    }
+
+    @Override
+    public void loadModel() {
         try {
-            MyCNNModel.model = NeuralNetwork.loadModel("src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/quickdraw/model/quickdraw_model-cnn.zip");
-            MyCNNModel.model.setInference(true);
+            System.out.println("Loading model from MongoDB...");
+            NeuralNetworkService service = new NeuralNetworkService();
+            model = service.loadModel("quickdraw-cnn");
+            model.setInference(true);
+            modelName = MyCNNModel.model.name;
+            modelLoaded = true;
+            System.out.println("Model loaded successfully!");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-
-    public MyCNNModel() {
-        super();
     }
 
     private INDArray preprocess(byte[] data) throws IOException {
@@ -54,6 +66,9 @@ public class MyCNNModel extends PredictionModel {
 
     @Override
     public List<PredictionResult> predict(byte[] data) {
+        if (!modelLoaded) {
+            throw new IllegalStateException("Model not loaded! Use loadModel() first.");
+        }
         List<PredictionResult> results = new ArrayList<>();
         try {
             INDArray drawing = preprocess(data);

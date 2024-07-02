@@ -50,4 +50,8 @@ public class Draw {
         return predictionResult;
     }
 
+    public Long getId() {
+        return id;
+    }
+
 }

@@ -1,4 +1,4 @@
-package br.deeplearning4java.neuralnetwork.examples.imageclassification.qdraw;
+package br.deeplearning4java.neuralnetwork.examples.classification.image.qdraw;
 
 import java.io.InputStream;
 import java.net.URL;

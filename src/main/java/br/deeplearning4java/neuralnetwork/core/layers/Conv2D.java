@@ -1,43 +1,44 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
 import br.deeplearning4java.neuralnetwork.core.activation.*;
-import br.deeplearning4java.neuralnetwork.database.ActivationConverter;
+import dev.morphia.Datastore;
+import dev.morphia.annotations.*;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @Entity
 public class Conv2D extends TrainableLayer {
     protected int filters;
     protected int kernelSize;
-    protected INDArray strides;
+    protected List<Integer> strides;
     protected String padding;
-    @Convert(converter = ActivationConverter.class)
+    @Transient
     protected IActivation activation;
+    @Property
+    public String activationType;
     protected String kernelInitializer;
     @Transient
     protected int pad;
 
-    @OneToOne
-    protected ZeroPadding2D zeroPadding2D;
+    protected Layer<ZeroPadding2D> zeroPadding2D;
 
     @Transient
     protected int m ,nHInput, nWInput, nCInput;
     @Transient
     protected int nHOutput, nWOutput, nCOutput;
 
+    @Transient
     private boolean isInitialized = false;
 
     @Transient
@@ -47,17 +48,27 @@ public class Conv2D extends TrainableLayer {
     @Transient
     private int[] vert_starts, horiz_starts;
 
-    public Conv2D(int filters, int kernelSize, INDArray strides, String padding, IActivation activation, String kernelInitializer) {
+    @PostLoad
+    public void loadActivationType() {
+        if (activationType != null) {
+            activation = Activation.create(activationType);
+        }
+        this.isInitialized = false;
+    }
+
+    public Conv2D(int filters, int kernelSize, List<Integer> strides, String padding, IActivation activation, String kernelInitializer) {
         this.filters = filters;
         this.kernelSize = kernelSize;
         this.strides = strides;
         this.padding = padding;
         this.activation = activation;
         this.kernelInitializer = kernelInitializer;
+        this.activationType = activation.getClass().getSimpleName().toLowerCase();
+        this.initZeroPadding2D();
     }
 
     public  Conv2D(int filters, int kernelSize, String padding, IActivation activation,  String kernelInitializer) {
-        this(filters, kernelSize, Nd4j.create(new double[]{1, 1}), padding, activation, kernelInitializer);
+        this(filters, kernelSize, Arrays.asList(1, 1), padding, activation, kernelInitializer);
     }
 
     public Conv2D(int filters, int kernelSize, IActivation activation) {
@@ -72,6 +83,17 @@ public class Conv2D extends TrainableLayer {
         this(1, 3, "valid", Activation.create("linear"), "random");
     }
 
+    private void initZeroPadding2D() {
+        if (padding.equalsIgnoreCase("same")) {
+            this.pad = kernelSize / 2;
+        } else if (padding.equalsIgnoreCase("valid")) {
+            this.pad = 0;
+        } else {
+            throw new IllegalArgumentException("Invalid padding: " + padding);
+        }
+        this.zeroPadding2D = new ZeroPadding2D(pad);
+    }
+
     @Override
     public void setup(INDArray inputs) {
         // Implement the setup method for a convolution function
@@ -81,24 +103,15 @@ public class Conv2D extends TrainableLayer {
         this.nWInput = (int) shape[2];
         this.nCInput = (int) shape[3];
 
-        if (padding.equals("same")) {
-            this.pad = kernelSize / 2;
-        } else if (padding.equals("valid")) {
-            this.pad = 0;
-        } else {
-            throw new IllegalArgumentException("Invalid padding: " + padding);
-        }
-
-        this.zeroPadding2D = new ZeroPadding2D(pad);
-
-        this.nHOutput = (((nHInput - kernelSize + 2 * pad) / strides.getInt(0)) + 1); // int((nHInput - kernelSize + 2 * pad) / strides[0]) + 1
-        this.nWOutput = (((nWInput - kernelSize + 2 * pad) / strides.getInt(1)) + 1); // int((nWInput - kernelSize + 2 * pad) / strides[1]) + 1
+        this.nHOutput = (((nHInput - kernelSize + 2 * pad) / strides.get(0)) + 1); // int((nHInput - kernelSize + 2 * pad) / strides[0]) + 1
+        this.nWOutput = (((nWInput - kernelSize + 2 * pad) / strides.get(1)) + 1); // int((nWInput - kernelSize + 2 * pad) / strides[1]) + 1
         this.nCOutput = filters;
 
-        this.vert_starts = IntStream.range(0, nHOutput).map(h -> h * strides.getInt(0)).toArray();
-        this.horiz_starts = IntStream.range(0, nWOutput).map(w -> w * strides.getInt(1)).toArray();
+        this.vert_starts = IntStream.range(0, nHOutput).map(h -> h * strides.get(0)).toArray();
+        this.horiz_starts = IntStream.range(0, nWOutput).map(w -> w * strides.get(1)).toArray();
 
-        if (!this.isInitialized) {
+        if (params == null || grads == null) {
+            System.out.println("Initializing weights and biases");
             double scale = getScale();
 
             // Weights and bias represented as a single 5D tensor, where the last dimension is used for the bias
@@ -169,13 +182,13 @@ public class Conv2D extends TrainableLayer {
             // Loop over vertical axis of the output volume
             for (int h = 0; h < nHOutput; h++) {
                 // Find the vertical start and end of the current "slice"
-                int vert_start = h * strides.getInt(0);
+                int vert_start = h * strides.get(0);
                 int vert_end = vert_start + kernelSize;
 
                 // Loop over horizontal axis of the output volume
                 for (int w = 0; w < nWOutput; w++) {
                     // Find the horizontal start and end of the current "slice"
-                    int horiz_start = w * strides.getInt(1);
+                    int horiz_start = w * strides.get(1);
                     int horiz_end = horiz_start + kernelSize;
 
                     // Loop over channels (= #filters) of the output volume
@@ -363,7 +376,7 @@ public class Conv2D extends TrainableLayer {
         return kernelSize;
     }
 
-    public INDArray getStrides() {
+    public List<Integer>  getStrides() {
         return strides;
     }
 
@@ -386,6 +399,10 @@ public class Conv2D extends TrainableLayer {
 
     public int getPad() {
         return pad;
+    }
+
+    public Layer<ZeroPadding2D> getZeroPadding2D() {
+        return zeroPadding2D;
     }
 
     @Override
@@ -427,21 +444,41 @@ public class Conv2D extends TrainableLayer {
         }
         dos.writeInt(this.filters);
         dos.writeInt(this.kernelSize);
-        Nd4j.write(strides, dos);
+        // Save the size of the strides list
+        dos.writeInt(this.strides.size());
+        // Save each element in the strides list
+        for (Integer stride : this.strides) {
+            dos.writeInt(stride);
+        }
         dos.writeUTF(this.padding);
-        dos.writeUTF(this.activation.getClass().getSimpleName().toLowerCase());
+        dos.writeUTF(this.activationType);
         dos.writeUTF(this.kernelInitializer);
         dos.writeBoolean(this.isInitialized);
         super.saveAdditional(dos);
     }
 
     @Override
+    public void save(Datastore datastore) {
+        if (this.getZeroPadding2D() != null) {
+            this.getZeroPadding2D().save(datastore);
+        }
+        super.save(datastore);
+    }
+
+    @Override
     public Conv2D loadAdditional(DataInputStream dis) throws IOException {
         this.filters = dis.readInt();
         this.kernelSize = dis.readInt();
-        this.strides = Nd4j.read(dis);
+        // Read the size of the strides list
+        int stridesSize = dis.readInt();
+        this.strides = new ArrayList<>(stridesSize);
+        // Read each element in the strides list
+        for (int i = 0; i < stridesSize; i++) {
+            this.strides.add(dis.readInt());
+        }
         this.padding = dis.readUTF();
-        this.activation = Activation.create(dis.readUTF());
+        this.activationType = dis.readUTF();
+        this.activation = Activation.create(this.activationType);
         this.kernelInitializer = dis.readUTF();
         this.isInitialized = dis.readBoolean();
         super.loadAdditional(dis);

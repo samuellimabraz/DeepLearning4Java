@@ -1,17 +1,19 @@
 package br.deeplearning4java.neuralnetwork.core.layers;
 
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Property;
+import dev.morphia.annotations.Transient;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 @Entity
 public class Dropout extends Layer<Dropout> {
+    @Property
     private double dropoutRate = 0.0;
     @Transient
     private INDArray mask;

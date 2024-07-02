@@ -79,7 +79,7 @@ public class TrainerBuilder {
     }
 
     public TrainerBuilder setEvalEvery(int evalEvery) {
-        if (evalEvery <= 0 || evalEvery >= epochs) throw new IllegalArgumentException("Eval every must be greater than 0");
+        if (evalEvery < 0 || evalEvery > epochs) throw new IllegalArgumentException("Eval every must be greater than 0");
         this.evalEvery = evalEvery;
         return this;
     }

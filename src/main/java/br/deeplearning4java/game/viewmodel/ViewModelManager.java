@@ -24,10 +24,12 @@ public class ViewModelManager {
         entityManager = em;
         if (em != null) {
             System.out.println("Database Connected created");
+            PersistenceManager.persist(em, currentSession.getModel());
+            PersistenceManager.persist(em, currentSession);
         }
+        currentSession.initRounds();
         System.out.println("New Session started");
         System.out.println("Model: " + currentSession.getModel().getClass().getSimpleName());
-        PersistenceManager.persist(em, currentSession.getModel());
     }
 
     public GameSession getCurrentSession() {

@@ -12,8 +12,17 @@ public abstract class PredictionModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "database_type")
+    public String databaseType;
+    @Column(name = "model_name")
+    public String modelName;
+    @Transient
+    protected boolean modelLoaded = false;
+
     @Convert(converter = StringListConverter.class)
-    protected static List<String> categories;
+    protected List<String> categories;
+
+    public abstract void loadModel();
 
     public abstract List<PredictionResult> predict(byte[] data);
 

@@ -1,4 +1,4 @@
-package br.deeplearning4java.neuralnetwork.examples.imageclassification.mnist;
+package br.deeplearning4java.neuralnetwork.examples.classification.image.mnist;
 
 import br.deeplearning4java.game.model.database.PersistenceManager;
 import br.deeplearning4java.neuralnetwork.core.activation.Activation;
@@ -30,7 +30,7 @@ import java.io.IOException;
 public class MnistNN {
 
     public static void train(int trainSize, int testSize) throws IOException {
-        DataLoader mnistDataLoader = new DataLoader("src/main/resources/br/edu/unifei/ecot12/deeplearning4java/neuralnetwork/examples/data/mnist/train/mnist_train.bin", "src/main/resources/br/edu/unifei/ecot12/deeplearning4java/neuralnetwork/examples/data/mnist/test/mnist_test.bin");
+        DataLoader mnistDataLoader = new DataLoader("src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/train/mnist_train.bin", "src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/test/mnist_test.bin");
 
         // Images
         INDArray x_train = mnistDataLoader.getAllTrainImages();
@@ -87,7 +87,7 @@ public class MnistNN {
         evaluate(model, x_test, y_test);
 
         try {
-                model.saveModel("src/main/resources/br/edu/unifei/ecot12/deeplearning4java/neuralnetwork/examples/data/mnist/model/mnist_model.bin");
+                model.saveModel("src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/model/mnist_model.bin");
                 System.out.println("Modelo salvo com sucesso!");
         } catch (IOException e) {
                 e.printStackTrace();

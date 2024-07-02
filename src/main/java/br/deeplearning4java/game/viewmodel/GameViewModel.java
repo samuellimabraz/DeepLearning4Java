@@ -35,14 +35,16 @@ public class GameViewModel extends ViewModel {
     }
 
 
-    public void nextRound() throws IOException {
+    public void nextRound(boolean correct) throws IOException {
         // Persist the current round before going to the next one
-        if (entityManager != null) {
-            PersistenceManager.persistAll(entityManager, Arrays.asList(
-                    session.getCurrentRound().getDrawing().getPredictionResult(),
-                    session.getCurrentRound().getDrawing(),
-                    session.getCurrentRound())
-            );
+        if (correct) {
+            if (entityManager != null) {
+                PersistenceManager.persistAll(entityManager, Arrays.asList(
+                        session.getCurrentRound().getDrawing().getPredictionResult(),
+                        session.getCurrentRound().getDrawing(),
+                        session.getCurrentRound())
+                );
+            }
         }
 
         if (session.nextRound())
@@ -55,6 +57,9 @@ public class GameViewModel extends ViewModel {
 
     public void endSessionGame() {
         session.endGame();
+        if (entityManager != null) {
+            PersistenceManager.updateEndTime(entityManager, session.getId(), session.getEndTime());
+        }
     }
 
     public void endControllerGame() throws IOException {
@@ -88,18 +93,22 @@ public class GameViewModel extends ViewModel {
 
         matchedPrediction.ifPresent(draw::setPredictionResult);
 
-        System.out.println("Predition result: " + predictions.get(0).getCategory());
+        PredictionResult result = predictions.get(0);
+        String category = result.getCategory();
+        double prob = result.getProbability();
+
+        System.out.println("Predition result: " + category + " - " + prob);
         controller.updatePredictions(predictions);
 
         // Verificar se a predição está correta
-        if (predictions.get(0).getCategory().equals(session.getCurrentRound().getCategory())) {
+        if (category.equals(session.getCurrentRound().getCategory()) && prob > 50.0f) {
             System.out.println("Correct!");
             // Enviar a imagem para a simulação do banco de dados
 
             PauseTransition pause = new PauseTransition(Duration.seconds(2.0));
             pause.setOnFinished(event -> {
                 try {
-                    nextRound();
+                    nextRound(true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -117,7 +126,7 @@ public class GameViewModel extends ViewModel {
             System.out.println("Time is up!");
             Platform.runLater(() -> {
                 try {
-                    nextRound();
+                    nextRound(false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
