@@ -69,3 +69,7 @@ build/
 ### Mac OS ###
 .DS_Store
 *.ipr
+
+*.npy
+*.npz
+*.bin
