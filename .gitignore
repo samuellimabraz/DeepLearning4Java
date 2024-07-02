@@ -74,3 +74,4 @@ build/
 *.npz
 *.bin
 *.csv
+.csv
