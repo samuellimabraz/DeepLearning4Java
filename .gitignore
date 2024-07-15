@@ -26,7 +26,6 @@ replay_pid*
 target/
 *.iml
 .idea/
-*.log
 logs/
 *.tmp
 *.bak
@@ -37,9 +36,7 @@ logs/
 .idea/compiler.xml
 .idea/libraries/
 *.iws
-*.iml
 
-target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -80,4 +77,5 @@ mnist_model.bin
 *.csv
 .csv
 /src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/
-
+/src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/
+/src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/test/
