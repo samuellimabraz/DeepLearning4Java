@@ -73,9 +73,6 @@ build/
 .npz
 *.bin
 .bin
-mnist_model.bin
 *.csv
 .csv
 /src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/
-/src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/
-/src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/test/
