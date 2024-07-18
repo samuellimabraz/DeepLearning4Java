@@ -18,9 +18,13 @@ The "library" uses the [ND4J](https://deeplearning4j.konduit.ai/nd4j/tutorials/q
 The examples package contains some use cases and tests for the library. The main ones are:
 - [Classification](src/main/java/br/deeplearning4java/neuralnetwork/examples/classification):
   - [Mnist](src/main/java/br/deeplearning4java/neuralnetwork/examples/classification/image/mnist/MnistNN.java): A simple example of a neural network for classifying handwritten digits from the MNIST dataset.
-      ![MNISTPlotter](src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/mnistplotter.mp4)
+      
   - [QuickDraw](src/main/java/br/deeplearning4java/neuralnetwork/examples/classification/image/qdraw/QuickDrawNN.java): A neural network for classifying hand-drawn sketches from the QuickDraw dataset.
-      ![QdrawPlotter](src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/qdrawplotter.mp4)
+
+    
+  https://github.com/user-attachments/assets/89a9018f-7fde-499f-98fc-78a282b8ec2f
+  
+  https://github.com/user-attachments/assets/51b63c3d-6666-4556-9917-fa72c03d1148
   
 - [Regression](src/main/java/br/deeplearning4java/neuralnetwork/examples/regression):
   - [Linear](src/main/java/br/deeplearning4java/neuralnetwork/examples/regression/LinearRegression.java): A simple example of a neural network for linear regression.
@@ -183,4 +187,4 @@ The game essentially uses the model trained with the "library" in [QuickDrawNN](
 
 The game implementation uses JavaFX with the MVC pattern.
 
-![Game](src/main/resources/br/deeplearning4java/game/game.mp4)
+https://github.com/user-attachments/assets/2684f4ec-6d96-46ff-acc2-6fa272d6ab3f
