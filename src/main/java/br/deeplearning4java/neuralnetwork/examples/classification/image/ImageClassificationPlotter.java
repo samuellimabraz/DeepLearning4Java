@@ -27,8 +27,6 @@ public class ImageClassificationPlotter extends Application {
     private DataLoader dataLoader;
     private NeuralNetwork model;
     private IActivation softmax = Activation.create("softmax");
-    private final static String MONGODB_URI = "mongodb+srv://samuellimabraz:hibana22@cluster0.bo7cqjk.mongodb.net/?appName=Cluster0";
-
 
     @Override
     public void init() throws Exception {
@@ -42,7 +40,7 @@ public class ImageClassificationPlotter extends Application {
         } else if (example == "quickdraw") {
             String dataRoot = "src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/quickdraw";
 
-            dataLoader = new DataLoader(dataRoot + "/npy/train/x_train250.npy", dataRoot + "/npy/train/y_train250.npy", dataRoot + "/npy/test/x_test250.npy", dataRoot + "/npy/test/y_test250.npy");
+            dataLoader = new DataLoader(dataRoot + "/npy/train/x_train200.npy", dataRoot + "/npy/train/y_train200.npy", dataRoot + "/npy/test/x_test200.npy", dataRoot + "/npy/test/y_test200.npy");
             NeuralNetworkService service = new NeuralNetworkService();
             model = service.loadModel("quickdraw-cnn");
             model.setInference(true);
@@ -95,7 +93,7 @@ public class ImageClassificationPlotter extends Application {
             int nextLabel = dataLoader.getTestLabel(currentImageIndex);
             WritableImage nextImage = Util.arrayToImage(nextImageArray, WIDTH, HEIGHT);
             imageView.setImage(nextImage);
-            labelView.setText("Label: " + nextLabel + " Predictions: " + predictions.argMax(1));
+            labelView.setText("Label: " + nextLabel + "\nPredictions: " + predictions.argMax(1) + "\nConfidence: " + predictions.maxNumber().doubleValue() * 100 + "%");
         });
     }
 

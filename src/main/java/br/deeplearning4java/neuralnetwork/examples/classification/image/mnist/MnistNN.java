@@ -4,6 +4,7 @@ import br.deeplearning4java.game.model.database.PersistenceManager;
 import br.deeplearning4java.neuralnetwork.core.activation.Activation;
 import br.deeplearning4java.neuralnetwork.core.layers.Dense;
 import br.deeplearning4java.neuralnetwork.core.layers.Dropout;
+import br.deeplearning4java.neuralnetwork.core.layers.Flatten;
 import br.deeplearning4java.neuralnetwork.core.metrics.Accuracy;
 import br.deeplearning4java.neuralnetwork.core.metrics.F1Score;
 import br.deeplearning4java.neuralnetwork.core.models.ModelBuilder;
@@ -23,8 +24,6 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import java.io.IOException;
 
 public class MnistNN {
@@ -51,8 +50,8 @@ public class MnistNN {
 //        x_train = scaler.fitTransform(x_train);
 //        x_test = scaler.transform(x_test);
 
-        //x_train = x_train.reshape(x_train.rows(), 28, 28, 1);
-        //x_test = x_test.reshape(x_test.rows(), 28, 28, 1);
+        x_train = x_train.reshape(x_train.rows(), 28, 28, 1);
+        x_test = x_test.reshape(x_test.rows(), 28, 28, 1);
 
         // One hot encoding
         y_train = Util.oneHotEncode(y_train, 10);
@@ -60,6 +59,7 @@ public class MnistNN {
 
         // Network
         NeuralNetwork model = new ModelBuilder()
+                .add(new Flatten())
                 .add(new Dense(89, Activation.create("relu"), "he"))
                 .add(new Dropout(0.4))
                 .add(new Dense(32, Activation.create("relu"), "he"))
@@ -88,7 +88,6 @@ public class MnistNN {
 
         try {
                 model.saveModel("src/main/resources/br/deeplearning4java/neuralnetwork/examples/data/mnist/model/mnist_model.bin");
-                System.out.println("Modelo salvo com sucesso!");
         } catch (IOException e) {
                 e.printStackTrace();
         }
