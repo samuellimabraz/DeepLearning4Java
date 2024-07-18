@@ -8,7 +8,7 @@ public abstract class LearningRateDecayStrategy {
         decayPerEpoch = this.calculateDecayPerEpoch(initialRate, finalRate, epochs);
     }
 
-    public abstract double calculateDecayPerEpoch(double initialRate, double finalRate, int epochs);
+    protected abstract double calculateDecayPerEpoch(double initialRate, double finalRate, int epochs);
 
     public abstract double updateLearningRate();
 }
