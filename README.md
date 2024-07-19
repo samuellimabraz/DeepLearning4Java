@@ -34,13 +34,13 @@ The examples package contains some use cases and tests for the library. The main
         <tr>
             <td>
                 <figure>
-                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/saddle_function2.png" alt="SaddleFunction" width="600" height="400">
+                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/saddle_function2.png" alt="SaddleFunction" width="600" height="320">
                     <figcaption>Saddle Function</figcaption>
                 </figure>
             </td>
             <td>
                 <figure>
-                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/rosenbrock2.png" alt="RosenbrockFunction" width="600" height="400">
+                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/rosenbrock2.png" alt="RosenbrockFunction" width="600" height="320">
                     <figcaption>Rosenbrock Function</figcaption>
                 </figure>
             </td>
@@ -48,13 +48,13 @@ The examples package contains some use cases and tests for the library. The main
         <tr>
             <td>
                 <figure>
-                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/seno.png" alt="SineFunction" width="600" height="400">
+                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/sine.png" alt="SineFunction" width="600" height="320">
                     <figcaption>Sine Function</figcaption>
                 </figure>
             </td>
             <td>
                 <figure>
-                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/linear.png" alt="LinearRegression" width="600" height="400">
+                    <img src="src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/linear.png" alt="LinearRegression" width="600" height="320">
                     <figcaption>Linear Regression</figcaption>
                 </figure>
             </td>
@@ -133,15 +133,6 @@ src/main/java/br/deeplearning4java/neuralnetwork
         ![Layers UML](src/main/resources/diagram/Layers.png)
 
 - Activation functions: [ReLU](src/main/java/br/deeplearning4java/neuralnetwork/core/activation/ReLU.java), [LeakyReLU](src/main/java/br/deeplearning4java/neuralnetwork/core/activation/LeakyReLU.java), [SiLU](src/main/java/br/deeplearning4java/neuralnetwork/core/activation/SiLU.java), [Sigmoid](src/main/java/br/deeplearning4java/neuralnetwork/core/activation/Sigmoid.java), [Tanh](src/main/java/br/deeplearning4java/neuralnetwork/core/activation/TanH.java), [Softmax](src/main/java/br/deeplearning4java/neuralnetwork/core/activation/Softmax.java)
-    - Use example:
-      ```java
-      IActivation relu = Activation.create(ActivateEnum.RELU); // Activation.create("relu");
-      INDArray input = Nd4j.create(new float[]{0, 1, -1, 5});
-      INDArray expectedForward = Nd4j.create(new float[]{0, 1, 0, 5});
-      INDArray expectedBackward = Nd4j.create(new float[]{0, 1, 0, 1});
-      System.out.println("relu.forward(input) = " + relu.forward(input));
-      System.out.println("relu.backward(input) = " + relu.backward(input));
-      ```
     - [Ilustração](src/main/java/br/deeplearning4java/neuralnetwork/examples/activations/PlotGraphs.java):
         ![Activations Examples](src/main/resources/br/deeplearning4java/neuralnetwork/examples/images/activex.png)
   
