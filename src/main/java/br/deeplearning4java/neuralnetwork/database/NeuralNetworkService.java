@@ -12,7 +12,6 @@ import dev.morphia.query.filters.Filters;
 import java.util.List;
 
 public class NeuralNetworkService {
-    private final static String DATABASE = "deeplearning4java";
     private final static String MONGODB_URI = System.getenv("MONGODB_URI");
     private final Datastore datastore;
 
