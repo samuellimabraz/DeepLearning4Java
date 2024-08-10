@@ -3,6 +3,7 @@ package br.deeplearning4java.neuralnetwork.examples.classification;
 import br.deeplearning4java.neuralnetwork.core.activation.Activation;
 import br.deeplearning4java.neuralnetwork.core.layers.Dense;
 import br.deeplearning4java.neuralnetwork.core.losses.CategoricalCrossEntropy;
+import br.deeplearning4java.neuralnetwork.core.losses.SoftmaxCrossEntropy;
 import br.deeplearning4java.neuralnetwork.core.metrics.Accuracy;
 import br.deeplearning4java.neuralnetwork.core.metrics.F1Score;
 import br.deeplearning4java.neuralnetwork.core.metrics.Precision;
@@ -10,6 +11,7 @@ import br.deeplearning4java.neuralnetwork.core.metrics.Recall;
 import br.deeplearning4java.neuralnetwork.core.models.ModelBuilder;
 import br.deeplearning4java.neuralnetwork.core.models.NeuralNetwork;
 import br.deeplearning4java.neuralnetwork.core.optimizers.Optimizer;
+import br.deeplearning4java.neuralnetwork.core.optimizers.RMSProp;
 import br.deeplearning4java.neuralnetwork.core.optimizers.SGDMomentum;
 import br.deeplearning4java.neuralnetwork.core.train.Trainer;
 import br.deeplearning4java.neuralnetwork.core.train.TrainerBuilder;
@@ -47,24 +49,24 @@ public class MulticlassClassification {
 
         // Criação do modelo
         NeuralNetwork model = new ModelBuilder()
-                .add(new Dense(10, Activation.create("relu"), "he"))
                 .add(new Dense(16, Activation.create("relu"), "he"))
-                .add(new Dense(4, Activation.create("softmax"), "xavier"))
+                .add(new Dense(16, Activation.create("relu"), "he"))
+                .add(new Dense(4, Activation.create("linear"), "xavier"))
                 .build();
 
         x_scaled.castTo(DataType.DOUBLE);
         y.castTo(DataType.DOUBLE);
 
         // Treinamento do modelo
-        Optimizer optimizer = new SGDMomentum(0.0001);//new RMSProp(0.001);
-        Trainer trainer = new TrainerBuilder(model, x_scaled, y, new CategoricalCrossEntropy())
+        Optimizer optimizer = new RMSProp(0.001);
+        Trainer trainer = new TrainerBuilder(model, x_scaled, y,  new SoftmaxCrossEntropy())
                 .setOptimizer(optimizer)
-                .setEpochs(400)
+                .setEpochs(200)
                 .setBatchSize(32)
                 .setEarlyStopping(true)
                 .setTrainRatio(1.0)
-                .setPatience(10)
-                .setEvalEvery(15)
+                .setPatience(5)
+                .setEvalEvery(10)
                 .setMetric(new Accuracy())
                 .build();
 

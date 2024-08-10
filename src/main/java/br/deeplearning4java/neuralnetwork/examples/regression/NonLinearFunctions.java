@@ -29,7 +29,7 @@ public class NonLinearFunctions {
         // Criação dos dados de treinamento
         int numSamples = 250;
         INDArray x = Nd4j.linspace((long) (-2*Math.PI), (long) (2*Math.PI), numSamples, DataType.DOUBLE).reshape(numSamples, 1);
-        INDArray y = Transforms.sin(x).add(1).div(2);
+        INDArray y = Transforms.sin(x);
 
         System.out.println("x type: " + x.dataType());
         System.out.println("y type: " + y.dataType());
@@ -38,26 +38,26 @@ public class NonLinearFunctions {
         System.out.println("y shape: " + Arrays.toString(y.shape()));
 
         // Normalização dos dados
-        DataProcessor scaler = new StandardScaler();
-        INDArray x_scaled = scaler.fitTransform(x);
+//        DataProcessor scaler = new StandardScaler();
+//        INDArray x_scaled = scaler.fitTransform(x);
 
         // Criação do modelo
         NeuralNetwork model = new ModelBuilder()
-                .add(new Dense(32, Activation.create("relu"), "he"))
+                .add(new Dense(16, Activation.create("relu"), "he"))
                 .add(new Dense(16, Activation.create("relu"), "he"))
                 .add(new Dense(1, Activation.create("tanh"), "xavier"))
                 .build();
 
         // Treinamento do modelo
-        Optimizer optimizer = new RMSProp(0.001);
-        Trainer trainer = new TrainerBuilder(model, x_scaled, y, new MeanSquaredError())
+        Optimizer optimizer = new Adam(0.001);
+        Trainer trainer = new TrainerBuilder(model, x, y, new MeanSquaredError())
                 .setOptimizer(optimizer)
                 .setEpochs(200)
                 .setBatchSize(32)
                 .setTrainRatio(1.0)
                 .setEarlyStopping(true)
                 .setPatience(10)
-                .setEvalEvery(25)
+                .setEvalEvery(10)
                 .build();
 
         INDArray x_test = trainer.getTestInputs();
@@ -68,7 +68,7 @@ public class NonLinearFunctions {
         // Predição
 
         INDArray predict = model.predict(x_test);
-        x_test = scaler.inverseTransform(x_test);
+//        x_test = scaler.inverseTransform(x_test);
 
         printMetrics(y_test, predict);
 
@@ -103,16 +103,16 @@ public class NonLinearFunctions {
 
         // Criação do modelo
         NeuralNetwork model = new ModelBuilder()
-                .add(new Dense(32, Activation.create("relu")))
-                .add(new Dense(16, Activation.create("tanh")))
-                .add(new Dense(1, Activation.create("linear")))
+                .add(new Dense(32, Activation.create("relu"), "he"))
+                .add(new Dense(32, Activation.create("relu"), "he"))
+                .add(new Dense(1, Activation.create("linear"), "xavier"))
                 .build();
 
         // Treinamento do modelo
-        Optimizer optimizer = new RMSProp(0.00025);
+        Optimizer optimizer = new Adam(0.001);
         Trainer trainer = new TrainerBuilder(model, x_scaled, y_scaled, new MeanSquaredError())
                 .setOptimizer(optimizer)
-                .setEpochs(2000)
+                .setEpochs(200)
                 .setBatchSize(25)
                 .setTrainRatio(1.0)
                 .setEarlyStopping(true)
@@ -283,9 +283,9 @@ public class NonLinearFunctions {
 
         // Criação do modelo
         NeuralNetwork model = new ModelBuilder()
-                .add(new Dense(32, Activation.create("relu"), "xavier"))
-                .add(new Dense(16, Activation.create("tanh"), "xavier"))
-                //.add(new Dense(16, Activation.create("relu"), "xavier"))
+                .add(new Dense(32, Activation.create("relu"), "he"))
+                .add(new Dense(32, Activation.create("relu"), "he"))
+                .add(new Dense(16, Activation.create("relu"), "he"))
                 .add(new Dense(1, Activation.create("linear"), "xavier"))
                 .build();
 
@@ -293,12 +293,12 @@ public class NonLinearFunctions {
         Optimizer optimizer = new RMSProp(0.0015);
         Trainer trainer = new TrainerBuilder(model, x_scaled, y_scaled, new MeanSquaredError())
                 .setOptimizer(optimizer)
-                .setEpochs(1000)
-                .setBatchSize(35)
+                .setEpochs(500)
+                .setBatchSize(32)
                 .setTrainRatio(1.0)
                 .setEarlyStopping(true)
-                .setPatience(200)
-                .setEvalEvery(50)
+                .setPatience(5)
+                .setEvalEvery(10)
                 .build();
 
         trainer.printDataInfo();
@@ -350,8 +350,8 @@ public class NonLinearFunctions {
 
         // Criação do modelo
         NeuralNetwork model = new ModelBuilder()
-                .add(new Dense(16, Activation.create("relu"), "xavier"))
-                .add(new Dense(32, Activation.create("tanh"), "xavier"))
+                .add(new Dense(16, Activation.create("relu"), "he"))
+                .add(new Dense(32, Activation.create("relu"), "he"))
                 .add(new Dense(1, Activation.create("linear"), "xavier"))
                 .build();
 
@@ -359,7 +359,7 @@ public class NonLinearFunctions {
         Optimizer optimizer = new SGDNesterov(0.00013, 0.9);//new Adam(0.00012, 0.9, 0.999, 1e-8);
         Trainer trainer = new TrainerBuilder(model, x_scaled, y_scaled, new MeanSquaredError())
                 .setOptimizer(optimizer)
-                .setEpochs(1200)
+                .setEpochs(300)
                 .setBatchSize(45)
                 .setTrainRatio(1.0)
                 .setEarlyStopping(true)
