@@ -12,12 +12,10 @@ import dev.morphia.query.filters.Filters;
 import java.util.List;
 
 public class NeuralNetworkService {
-    private final static String DATABASE = "deeplearning4java";
-    private final static String MONGODB_URI = "mongodb+srv://samuellimabraz:hibana22@cluster0.bo7cqjk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    private final static String MONGODB_URI = System.getenv("MONGODB_URI");
     private final Datastore datastore;
 
     public NeuralNetworkService() {
-        System.out.println("Connecting to MongoDB at " + MONGODB_URI + System.getenv("MONGODB_URI"));
         this.datastore = Morphia.createDatastore(MongoClients.create(MONGODB_URI));
     }
 
